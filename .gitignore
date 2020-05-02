@@ -1,0 +1,15 @@
+*.gem
+*.swp
+*_flymake.*
+*~
+/.*
+/build/
+/coverage/
+/doc/
+/tmp/
+/Vagrantfile
+/vendor/
+!/.gitignore
+!/.rspec
+!/.rubocop.yml
+!/.solargraph.yml
