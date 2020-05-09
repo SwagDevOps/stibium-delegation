@@ -1,30 +1,20 @@
 # frozen_string_literal: true
 
-require_relative 'lib/stibium-delegation'
-require_relative 'dev/stibium'
-
 require 'rake'
-require 'kamaze/project'
 autoload(:YAML, 'yaml')
 autoload(:Pathname, 'pathname')
 
-Kamaze::Project.instance do |c|
-  c.subject = Stibium::Delegation
-  c.name = 'stibium-delegation'
-  # @formatter:off
-  # noinspection RubyLiteralArrayInspection
-  c.tasks = [
-    'cs', 'cs:pre-commit',
-    'doc', 'doc:watch',
-    'gem', 'gem:install',
-    'misc:gitignore',
-    'shell',
-    'sources:license',
-    'test',
-    'version:edit',
-  ].shuffle
-  # @formatter:on
-end.load!
+if Gem::Specification.find_all_by_name('simplecov').any?
+  if YAML.safe_load(ENV['coverage'].to_s) == true
+    autoload(:SimpleCov, 'simplecov').tap do
+      SimpleCov.start do
+        ['rake/', 'spec/', 'dev/'].each { |path| add_filter(path) }
+      end
+    end
+  end
+end
+
+require_relative('dev/project').tap { Kamaze::Project.instance.load! }
 
 task default: [:gem]
 
@@ -41,16 +31,5 @@ end
 if project.path('spec').directory?
   task :spec do |_task, args|
     Rake::Task[:test].invoke(*args.to_a)
-  end
-end
-
-if Gem::Specification.find_all_by_name('simplecov').any?
-  if YAML.safe_load(ENV['coverage'].to_s) == true
-    autoload(:SimpleCov, 'simplecov')
-
-    SimpleCov.start do
-      add_filter 'rake/'
-      add_filter 'spec/'
-    end
   end
 end
