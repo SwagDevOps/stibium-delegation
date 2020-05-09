@@ -10,6 +10,7 @@ require_relative '../delegation'
 
 module Stibium::Delegation
   # @see https://github.com/SwagDevOps/kamaze-version
+  # @return [Kamaze::Version]
   VERSION = proc do
     require 'kamaze/version'
 
