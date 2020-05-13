@@ -1,0 +1,5 @@
+---
+class_method: |
+  public def class_method(*args, &block)
+    inner_class.public_send(:class_method, *args, &block)
+  end

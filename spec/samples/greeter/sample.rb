@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Class.new do
+  include ClassAttr
   include Stibium::Delegation
 
   def initialize
@@ -17,5 +18,9 @@ Class.new do
     end
   end
 
-  delegate(:hello, :goodbye, to: :'@greeter')
+  delegate(:hello, :goodbye, to: :'@greeter').tap do |res|
+    class_attr(:delegation)
+    # noinspection RubyResolve
+    self.delegation = res
+  end
 end

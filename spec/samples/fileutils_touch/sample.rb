@@ -7,9 +7,14 @@ Class.new do
     @fs = FileUtils
   end
 
+  include ClassAttr
   include Stibium::Delegation
 
   delegate(:touch, to: '@fs') do
     { type: FileUtils, instance: false }
+  end.tap do |res|
+    class_attr(:delegation)
+    # noinspection RubyResolve
+    self.delegation = res
   end
 end

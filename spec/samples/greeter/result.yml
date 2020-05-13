@@ -1,0 +1,9 @@
+---
+hello: |
+  public def hello(*args, &block)
+    @greeter.public_send(:hello, *args, &block)
+  end
+goodbye: |
+  public def goodbye(*args, &block)
+    @greeter.public_send(:goodbye, *args, &block)
+  end

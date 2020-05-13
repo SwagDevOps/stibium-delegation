@@ -21,3 +21,6 @@ end
   }
 end
 # @formmatter:on
+
+# Load files in lib - (specific to this test suite) -----------------
+Dir.glob("#{__dir__}/lib/*.rb").shuffle.map { |req| require req }
