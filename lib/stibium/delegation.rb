@@ -32,17 +32,17 @@ module Stibium::Delegation
     # Provides a ``delegate`` class method
     # to expose contained objects' public methods.
     #
-    # @return [Array<Symbol>]
+    # @return [Hash{Symbol => String}]
     def delegate(*methods, to:, visibility: :public, prefix: nil, &block)
-      methods.map(&:to_sym).each do |method|
+      methods.map(&:to_sym).map do |method|
         # rubocop:disable Layout/LineLength
-        Stibium::Delegation::Methodifier.new(method: method, &block).yield_self do |methodifier|
-          methodifier.call(to: to, visibility: visibility, prefix: prefix).tap do |code|
+        Stibium::Delegation::Methodifier.new(method: method, &block).yield_self do |m|
+          [method] << m.call(to: to, visibility: visibility, prefix: prefix).freeze.tap do |code|
             self.class_eval(code, __FILE__, __LINE__)
           end
         end
         # rubocop:enable Layout/LineLength
-      end
+      end.to_h.freeze
     end
   end
 end
