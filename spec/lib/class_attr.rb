@@ -15,7 +15,7 @@ module ClassAttr
   module ClassMethods
     protected
 
-    def class_attr(name)
+    def class_attr(name, &block)
       # @formatter:off
       ([
         'class << self',
@@ -25,6 +25,7 @@ module ClassAttr
         'end', # @formatter:on
       ].join("\n") % { attr_name: name }).tap do |code|
         self.class_eval(code, __FILE__, __LINE__)
+        self.__send__("#{name}=", block&.call)
       end
     end
   end
