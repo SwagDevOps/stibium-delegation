@@ -8,7 +8,7 @@
 
 require_relative '../delegation'
 
-# @qpi private
+# @api private
 #
 # Method inpection
 #
@@ -45,9 +45,15 @@ class Stibium::Delegation::Inspection
   # @param [Class|Module] type
   # @param [Symbol] method
   # @param [Boolean] instance
+  #
+  # @raise [Stibium::Delegation::Errors::NoPublicMethodError]
   def scan(type:, method:, instance: true)
+    unless (instance ? type.allocate : type).respond_to?(method.to_sym)
+      Stibium::Delegation::Errors::NoPublicMethodError.new(type: type, method: method).tap { |e| raise e }
+    end
+
     Result.new.tap do |result|
-      type.public_send("#{instance ? :instance_ : nil}method", method).parameters.each do |parameters| # rubocop:disable Layout/LineLength
+      type.public_send("#{instance ? :instance_ : nil}method", method).parameters.each do |parameters|
         result.add(*parameters)
       end
     end
