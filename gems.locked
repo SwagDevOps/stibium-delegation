@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/SwagDevOps/kamaze-project.git
-  revision: 0b0bbd0ce41d31b143faed7687d7893db9e2e9e2
+  revision: 76dcb06b684b10d6ddf4a72292c208c8f8b418f4
   branch: develop
   specs:
     kamaze-project (1.1.0)
