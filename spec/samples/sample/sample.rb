@@ -49,22 +49,41 @@ Class.new do
         current.tap { yield current if block_given? }
       end
     end
-  end.tap do |utils_klass|
-    self.singleton_class.define_method(:utils_klass) { utils_klass }
+
+    def answer
+      42
+    end
+
+    def secret
+      autoload(:SecureRandom, 'securerandom')
+
+      SecureRandom.hex
+    end
+  end.tap do |utils_class|
+    self.singleton_class.define_method(:utils_class) { utils_class }
   end
 
   def initialize
-    @kw = self.class.__send__(:utils_klass).new
+    @utils = self.class.__send__(:utils_class).new
   end
 
-  include ClassAttr
   include Stibium::Delegation
+  include ClassAttr
+  class_attr(:delegation) { Hash.new } # rubocop:disable Style/EmptyLiteral
+  utils_class.tap do |delegator|
+    delegate(:secret, to: :'@utils', visibility: :private) { delegator }.tap do |res|
+      # noinspection RubyResolve
+      self.delegation.merge!(res)
+    end
 
-  # rubocop:disable Layout/LineLength
-  delegate(:concat, :greatest, :auth, :fibonacci, to: :'@utils') { __send__(:utils_klass) }.tap do |res|
-    class_attr(:delegation)
-    # noinspection RubyResolve
-    self.delegation = res
+    delegate(:answer, to: :'@utils', visibility: :protected) { delegator }.tap do |res|
+      # noinspection RubyResolve
+      self.delegation.merge!(res)
+    end
+
+    delegate(:concat, :greatest, :auth, :fibonacci, to: :'@utils') { delegator }.tap do |res|
+      # noinspection RubyResolve
+      self.delegation.merge!(res)
+    end
   end
-  # rubocop:enable Layout/LineLength
 end

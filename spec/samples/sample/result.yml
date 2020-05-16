@@ -15,3 +15,11 @@ fibonacci: |
   public def fibonacci(limit)
     @utils.public_send(:fibonacci, limit)
   end
+answer: |
+  protected def answer()
+    @utils.public_send(:answer)
+  end
+secret: |
+  private def secret()
+    @utils.public_send(:secret)
+  end
