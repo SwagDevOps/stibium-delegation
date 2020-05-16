@@ -9,22 +9,31 @@
 require_relative '../inspection'
 
 # Describe the inspection result.
+#
+# @api private
 class Stibium::Delegation::Inspection::Result
   def initialize
-    @state = {}
-    @parameterizers = self.class.__send__(:parameterizers_for, self)
+    @parameterizers = self.class.__send__(:parameterizers_for, self).freeze
+    @state = {}.freeze
   end
 
+  # Add new parameter with given type and name.
+  #
   # @param [Symbol] type
   # @param [Symbol|nil] name
+  #
+  # @return [self]
   def add(type, name)
     self.tap do
       self.parameterize(type, name).tap do |res|
-        # @formatter:off
-        state[state.values.length] = [
-          [type, name].map { |v| v.nil? ? nil : v.to_sym }, res
-        ].map(&:freeze).freeze
-        # @formatter:on
+        @state.dup.tap do |state|
+          # @formatter:off
+          state[state.values.length] = [
+            [type, name].map { |v| v&.to_sym }.freeze,
+            res.freeze
+          ].freeze
+          # @formatter:on
+        end.tap { |state| @state = state.freeze }
       end
     end
   end
@@ -50,30 +59,47 @@ class Stibium::Delegation::Inspection::Result
     to_a.join(', ').freeze
   end
 
+  # @return [Array<String>]
   def to_a
-    state.values.map { |v| v[1] }.compact.map(&:freeze).freeze
+    Hash[state.sort].values.map(&:last).yield_self do |values|
+      values.compact.map { |v| v.to_s.freeze }.freeze
+    end
   end
 
-  # Get as parameters (usable for method call).
+  # Get parameters (usable for method call).
   #
   # @return [Array<String>]
   def parameters
-    to_a.map { |str| str.gsub(/:$/, '') }.map(&:freeze).freeze
+    to_a.map { |str| str.gsub(/:$/, '').freeze }.freeze
   end
 
   protected
 
-  # @return [Hash{Integer => Array}]
-  attr_accessor :state
-
+  # Get parameterizers.
+  #
+  # @see .parameterizers_for
+  #
   # @return [Hash{Symbol => Proc}]
   attr_reader :parameterizers
+
+  # Internal state, evolving through successive ``#add`` calls.
+  #
+  # @return [Hash{Integer => Array}]
+  #
+  # @see #add
+  #
+  # Hash key is the position for parameter.
+  # Fisrt value, are the parameters used by parameterizers lambda call;
+  # last value is the parameterizered value (parameterizers call result).
+  attr_reader :state
 
   class << self
     protected
 
-    # rubocop:disable Metrics/MethodLength, Layout/LineLength
+    # rubocop:disable Metrics/MethodLength
 
+    # Get parameterizers for given intsance.
+    #
     # @api private
     #
     # @param [Result] result
@@ -90,20 +116,18 @@ class Stibium::Delegation::Inspection::Result
 
       {}.tap do |r|
         parameterizers.each do |k, v|
-          k.each { |key| r[key] = v }
+          k.each { |key| r[key.freeze] = v.freeze }
         end
-      end
+      end.freeze
     end
-    # rubocop:enable Metrics/MethodLength, Layout/LineLength
+    # rubocop:enable Metrics/MethodLength
   end
 
-  # Generate a new name.
+  # Generate a new parameter name.
   #
   # @return [String]
   def name(count = 1)
-    "st#{count}".tap do |str|
-      return to_a.include?(str) ? name(count + 1) : str
-    end
+    "st#{count}".yield_self { |str| to_a.include?(str) ? name(count + 1) : str }
   end
 
   # @param [Symbol] type
@@ -111,8 +135,6 @@ class Stibium::Delegation::Inspection::Result
   def parameterize(type, name)
     return parameterizers[type].call(type, name) if parameterizers.key?(type)
 
-    # rubocop:disable Style/RedundantException
-    raise RuntimeError, "Unsupported type #{type.inspect}"
-    # rubocop:enable Style/RedundantException
+    raise Stibium::Delegation::Errors::UnsupportedParameterTypeError, type
   end
 end
