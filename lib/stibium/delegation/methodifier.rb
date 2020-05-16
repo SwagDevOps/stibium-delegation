@@ -8,7 +8,7 @@
 
 require_relative '../delegation'
 
-# @qpi private
+# @api private
 class Stibium::Delegation::Methodifier
   # @return [Symbol]
   attr_reader :method
