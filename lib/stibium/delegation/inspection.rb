@@ -42,6 +42,8 @@ class Stibium::Delegation::Inspection
     end
   end
 
+  # Scan given ``type`` for public methods named ``method``.
+  #
   # @param [Class|Module] type
   # @param [Symbol] method
   # @param [Boolean] instance
@@ -49,7 +51,7 @@ class Stibium::Delegation::Inspection
   # @raise [Stibium::Delegation::Errors::NoPublicMethodError]
   def scan(type:, method:, instance: true)
     unless (instance ? type.allocate : type).respond_to?(method.to_sym)
-      Stibium::Delegation::Errors::NoPublicMethodError.new(type: type, method: method).tap { |e| raise e }
+      Stibium::Delegation::Errors::NoPublicMethodError.new(type: type, name: method).tap { |e| raise e }
     end
 
     Result.new.tap do |result|
