@@ -67,21 +67,25 @@ Class.new do
     @utils = self.class.__send__(:utils_class).new
   end
 
+  protected
+
+  attr_reader :utils
+
   include Stibium::Delegation
   include ClassAttr
   class_attr(:delegation) { Hash.new } # rubocop:disable Style/EmptyLiteral
   utils_class.tap do |delegator|
-    delegate(:secret, to: :'@utils', visibility: :private) { delegator }.tap do |res|
+    delegate(:secret, to: :utils, visibility: :private) { delegator }.tap do |res|
       # noinspection RubyResolve
       self.delegation.merge!(res)
     end
 
-    delegate(:answer, to: :'@utils', visibility: :protected) { delegator }.tap do |res|
+    delegate(:answer, to: :utils, visibility: :protected) { delegator }.tap do |res|
       # noinspection RubyResolve
       self.delegation.merge!(res)
     end
 
-    delegate(:concat, :greatest, :auth, :fibonacci, to: :'@utils') { delegator }.tap do |res|
+    delegate(:concat, :greatest, :auth, :fibonacci, to: :utils) { delegator }.tap do |res|
       # noinspection RubyResolve
       self.delegation.merge!(res)
     end

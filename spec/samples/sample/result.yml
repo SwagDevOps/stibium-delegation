@@ -1,25 +1,25 @@
 ---
 concat: |
   public def concat(*args, **kwargs)
-    @utils.public_send(:concat, *args, **kwargs)
+    utils.public_send(:concat, *args, **kwargs)
   end
 greatest: |
   public def greatest(foo, bar)
-    @utils.public_send(:greatest, foo, bar)
+    utils.public_send(:greatest, foo, bar)
   end
 auth: |
   public def auth(username:, password:)
-    @utils.public_send(:auth, username, password)
+    utils.public_send(:auth, username, password)
   end
 fibonacci: |
   public def fibonacci(limit)
-    @utils.public_send(:fibonacci, limit)
+    utils.public_send(:fibonacci, limit)
   end
 answer: |
   protected def answer()
-    @utils.public_send(:answer)
+    utils.public_send(:answer)
   end
 secret: |
   private def secret()
-    @utils.public_send(:secret)
+    utils.public_send(:secret)
   end
