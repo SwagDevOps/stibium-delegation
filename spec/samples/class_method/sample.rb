@@ -16,13 +16,13 @@ Class.new do
     end
   end
 
+  protected
+
+  attr_reader :inner_class
+
   delegate(:class_method, to: :inner_class).tap do |res|
     class_attr(:delegation)
     # noinspection RubyResolve
     self.delegation = res
   end
-
-  protected
-
-  attr_reader :inner_class
 end
