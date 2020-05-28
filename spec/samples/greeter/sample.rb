@@ -18,7 +18,11 @@ Class.new do
     end
   end
 
-  delegate(:hello, :goodbye, to: :'@greeter').tap do |res|
+  protected
+
+  attr_reader :greeter
+
+  delegate(:hello, :goodbye, to: :greeter).tap do |res|
     class_attr(:delegation)
     # noinspection RubyResolve
     self.delegation = res
