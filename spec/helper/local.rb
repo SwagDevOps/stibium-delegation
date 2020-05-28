@@ -2,7 +2,6 @@
 
 autoload(:FactoryStruct, "#{__dir__}/factory_struct")
 autoload(:Pathname, 'pathname')
-autoload(:FileUtils, 'fileutils')
 
 # Local (helper) methods
 module Local
@@ -21,7 +20,6 @@ module Local
     Pathname.new(Dir.tmpdir)
             .join(Pathname.new(['rspec', Process.uid].join('.')))
             .join(Kamaze::Project.instance.name.to_s)
-            .tap { |path| FileUtils.mkdir_p(path) }
     # @formatter:on
   end
 
