@@ -20,6 +20,7 @@ module Stibium::Delegation
     Errors: 'errors',
     Inspection: 'inspection',
     Methodifier: 'methodifier',
+    ReflectionClass: 'reflection_class',
   }.each { |s, fp| autoload(s, "#{__dir__}/delegation/#{fp}") } # @formatter:on
 
   def self.included(base)
@@ -34,7 +35,11 @@ module Stibium::Delegation
     # to expose contained objects' public methods.
     #
     # @return [Hash{Symbol => String}]
-    def delegate(*methods, to:, visibility: :public, prefix: nil, &block)
+    #
+    # @raise [Stibium::Delegation::Errors::Error]
+    def delegate(*methods, to:, visibility: :public, safe: true, prefix: nil, &block) # rubocop:disable Metrics/ParameterLists
+      ReflectionClass.new(self).ensure_symbol!(to) if safe
+
       methods.map(&:to_sym).map do |method|
         Stibium::Delegation::Methodifier.new(method: method, &block).yield_self do |m|
           [method] << m.call(to: to, visibility: visibility, prefix: prefix).freeze.tap do |code|
