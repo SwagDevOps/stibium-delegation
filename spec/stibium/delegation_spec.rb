@@ -6,6 +6,7 @@ describe Stibium::Delegation, :'stibium/delegation' do
     :Errors,
     :Inspection,
     :Methodifier,
+    :ReflectionClass,
     :VERSION,
   ].each do |const_name| # @formatter:on
     it { expect(described_class).to be_const_defined(const_name) }
@@ -45,6 +46,12 @@ sham!(:samples).instances.fetch(:fileutils_touch).tap do |sample|
 
     sham!(:utils).mktemp.call(path: tmpdir, verbose: true, dry_run: true).tap do |file|
       context "#touch(#{file.inspect})" do
+        before(:each) do
+          autoload(:FileUtils, 'fileutils')
+
+          FileUtils.mkdir_p(file.dirname)
+        end
+
         it { expect(subject.touch(file)).to eq([file.to_s]) }
       end
     end
@@ -65,7 +72,7 @@ sham!(:samples).instances.fetch(:empty).tap do |sample|
         it do
           expect do
             described_class.__send__(:delegate, :failed?, to: :'@status', & -> { delegation_type })
-          end.to raise_error(error_class, /method `failed\?' for #<Class:.*> is not a public method/)
+          end.to raise_error(error_class, /method `failed\?' for #<Class:.*> is not a public instance method/)
         end
       end
     end
