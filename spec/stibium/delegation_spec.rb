@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+autoload(:FileUtils, 'fileutils')
+
 # constants ---------------------------------------------------------
 describe Stibium::Delegation, :'stibium/delegation' do
   [ # @formatter:off
@@ -44,13 +46,10 @@ sham!(:samples).instances.fetch(:fileutils_touch).tap do |sample|
 
     it { expect(subject).to respond_to(:touch) }
 
-    sham!(:utils).mktemp.call(path: tmpdir, verbose: true, dry_run: true).tap do |file|
+    sham!(:utils).mktemp.call(path: tmpdir, verbose: false, dry_run: true).tap do |file|
       context "#touch(#{file.inspect})" do
-        before(:each) do
-          autoload(:FileUtils, 'fileutils')
-
-          FileUtils.mkdir_p(file.dirname)
-        end
+        before(:each) { FileUtils.mkdir_p(file.dirname) }
+        after(:all) { FileUtils.rm(file.to_path) }
 
         it { expect(subject.touch(file)).to eq([file.to_s]) }
       end
