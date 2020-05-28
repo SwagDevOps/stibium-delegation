@@ -1,5 +1,5 @@
 ---
 touch: |
   public def touch(list, **kwargs)
-    @fs.public_send(:touch, list, **kwargs)
+    fs.public_send(:touch, list, **kwargs)
   end

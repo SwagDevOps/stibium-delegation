@@ -10,7 +10,11 @@ Class.new do
   include ClassAttr
   include Stibium::Delegation
 
-  delegate(:touch, to: '@fs') do
+  protected
+
+  attr_reader :fs
+
+  delegate(:touch, to: :fs) do
     { type: FileUtils, instance: false }
   end.tap do |res|
     class_attr(:delegation)
