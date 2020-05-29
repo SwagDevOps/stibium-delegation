@@ -40,18 +40,29 @@ sham!(:samples).results.each do |sample_name, results|
 end
 
 # testing real behavior ---------------------------------------------
-sham!(:samples).instances.fetch(:fileutils_touch).tap do |sample|
-  describe sample.class, :'stibium/delegation' do
-    let(:subject) { sample }
+[ # @formatter:off
+  :touch_from_fileutils,
+  :touch_from_const,
+  :touch_from_inner_const,
+].shuffle.each do |sample_name| # @formatter:on
+  sham!(:samples).instances.fetch(sample_name).tap do |sample|
+    describe sample.class, :'stibium/delegation' do
+      let(:subject) { sample }
 
-    it { expect(subject).to respond_to(:touch) }
+      it { expect(subject).to respond_to(:touch) }
 
-    sham!(:utils).mktemp.call(path: tmpdir, verbose: false, dry_run: true).tap do |file|
-      context "#touch(#{file.inspect})" do
-        before(:each) { FileUtils.mkdir_p(file.dirname) }
-        after(:all) { FileUtils.rm(file.to_path) }
+      sham!(:utils).mktemp.call(path: tmpdir, dry_run: true).tap do |file|
+        context "#touch(#{file.inspect})" do
+          before(:each) { FileUtils.mkdir_p(file.dirname) }
+          after(:all) { FileUtils.rm(file.to_path) }
 
-        it { expect(subject.touch(file)).to eq([file.to_s]) }
+          it do
+            subject.touch(file).tap do |files|
+              expect(files).to eq([file.to_s])
+              expect(File).to exist(files.fetch(0))
+            end
+          end
+        end
       end
     end
   end
