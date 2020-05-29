@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+autoload(:RSpec, 'rspec')
 require_relative '../dev/project'
 
 Dir.glob("#{__dir__}/../lib/*.rb").map { |req| require req }
