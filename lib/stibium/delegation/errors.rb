@@ -30,7 +30,7 @@ module Stibium::Delegation::Errors
   end
 
   # @abstract
-  class MiisingSymbolError < Error
+  class MissingSymbolError < Error
     # @type [Class|Module|Object]
     attr_reader :type
 
@@ -46,21 +46,21 @@ module Stibium::Delegation::Errors
   end
 
   # Method reflection error
-  class NoConstantError < MiisingSymbolError
+  class NoConstantError < MissingSymbolError
     def to_s
       "uninitialized constant #{name} for #{type}"
     end
   end
 
   # Method reflection error
-  class NoMethodError < Error
+  class NoMethodError < MissingSymbolError
     def to_s
       "undefined method `#{name}' for #{type}"
     end
   end
 
   # Method inspection error
-  class NoPublicMethodError < MiisingSymbolError
+  class NoPublicMethodError < MissingSymbolError
     def to_s
       "method `#{name}' for #{type} is not a public instance method"
     end
