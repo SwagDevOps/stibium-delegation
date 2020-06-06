@@ -38,7 +38,7 @@ module Stibium::Delegation::Errors
     attr_reader :name
 
     # @param [Class|Module|Object] type
-    # @param [Symbol|String] method
+    # @param [Symbol|String] name
     def initialize(type:, name:)
       @type = type
       @name = name.to_sym
