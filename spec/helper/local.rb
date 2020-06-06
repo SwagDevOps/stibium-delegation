@@ -16,6 +16,7 @@ module Local
 
   # @return [Pathname]
   def tmpdir
+    require 'tmpdir'
     # @formatter:off
     Pathname.new(Dir.tmpdir)
             .join(Pathname.new(['rspec', Process.uid].join('.')))
