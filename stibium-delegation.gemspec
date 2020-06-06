@@ -23,6 +23,11 @@ Gem::Specification.new do |s|
     ".yardopts",
     "lib/stibium-delegation.rb",
     "lib/stibium/delegation.rb",
+    "lib/stibium/delegation/errors.rb",
+    "lib/stibium/delegation/inspection.rb",
+    "lib/stibium/delegation/inspection/result.rb",
+    "lib/stibium/delegation/methodifier.rb",
+    "lib/stibium/delegation/reflection_class.rb",
     "lib/stibium/delegation/version.rb",
     "lib/stibium/delegation/version.yml",
   ]
