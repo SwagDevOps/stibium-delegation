@@ -37,9 +37,9 @@ class Stibium::Delegation::ReflectionClass
     end
   end
 
-  # Ensure given ``method`` name is defined on ``subject``.
+  # Ensure given `name is defined on ``subject`` as a method or a constant.
   #
-  # @param [String|Symbol] method
+  # @param [String|Symbol] name
   #
   # @raise [NoMethodError]
   # @return [Boolean]
